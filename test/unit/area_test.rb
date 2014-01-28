@@ -10,7 +10,6 @@ class TestAreaLazyLoading < MiniTest::Unit::TestCase
     assert_nil Area.instance_variable_get(:@area_codes)
     assert_instance_of Array,  Area.area_codes
     assert_instance_of Array,  Area.instance_variable_get(:@area_codes)
-    assert_instance_of Array,  Area.area_codes
     # ensure that the area_codes method returns the same object (not objects wit the same value)
     assert_same Area.area_codes, Area.area_codes
   end
