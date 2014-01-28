@@ -3,6 +3,27 @@ require 'minitest/benchmark' if ENV["BENCH"]
 require 'minitest/pride'
 require File.expand_path('../../../lib/area.rb', __FILE__)
 
+# NOTE: THIS TEST SHOULD ALWAYS RUN FIRST
+# It is because it tests on cached module instance variables
+class TestAreaLazyLoading < MiniTest::Unit::TestCase
+  def test_that_area_codes_is_lazy_Loaded
+    assert_nil Area.instance_variable_get(:@area_codes)
+    assert_instance_of Array,  Area.area_codes
+    assert_instance_of Array,  Area.instance_variable_get(:@area_codes)
+    assert_instance_of Array,  Area.area_codes
+    # ensure that the area_codes method returns the same object (not objects wit the same value)
+    assert_same Area.area_codes, Area.area_codes
+  end
+
+  def test_that_zip_codes_is_lazy_Loaded
+    assert_nil Area.instance_variable_get(:@zip_codes)
+    assert_instance_of Array,  Area.zip_codes
+    assert_instance_of Array,  Area.instance_variable_get(:@zip_codes)
+    # ensure that the zip_codes method returns the same object (not objects wit the same value)
+    assert_same Area.zip_codes, Area.zip_codes
+  end
+end
+
 class TestInteger < MiniTest::Unit::TestCase
 
   def test_that_it_converts_area_code_to_region
