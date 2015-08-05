@@ -11,29 +11,33 @@ require 'area/string'
 
 module Area
 
-  zip_path = File.open(File.join(File.dirname(__FILE__), '..', 'data', 'zipcodes.csv'))
-  area_path = File.open(File.join(File.dirname(__FILE__), '..', 'data', 'areacodes.csv'))
-
-  # there is probably a better way to do this...
-  if RUBY_VERSION.to_f >= 1.9
-    @area_codes = CSV.read(area_path)
-    @zip_codes = CSV.read(zip_path)
-  else
-    @area_codes = FasterCSV.parse(area_path)
-    @zip_codes = FasterCSV.parse(zip_path)
-  end
-
+  # Public: Returns an two-dimentional Array of area codes.
+  #
+  # Examples
+  #
+  #   Area.area_codes
+  #   # => [["201", "NJ"]..]
+  #
+  # Returns an Array representation of area codes.
   def self.area_codes
-    @area_codes
+    @area_codes ||= load_csv(:areacodes)
   end
 
+  # Public: Returns an two-dimentional Array of zip codes.
+  #
+  # Examples
+  #
+  #   Area.zip_codes
+  #   # => [["00401","Pleasantville","NY","41.1381","-73.7847"]..]
+  #
+  # Returns an Array representation of zip codes.
   def self.zip_codes
-    @zip_codes
+    @zip_codes ||= load_csv(:zipcodes)
   end
 
   def self.regions
     regions = []
-    @area_codes.map{|row| regions << row.last.upcase }
+    area_codes.map{|row| regions << row.last.upcase }
     return regions
   end
 
@@ -78,4 +82,20 @@ module Area
   end
 
 
+  private
+
+    # Internal: Load the data in corresponding csv files in the data directory.
+    #
+    # type - String or Symbol value that is the same as the name of a CSV file in the data directory.
+    #
+    # Examples
+    #
+    #   self.load_csv(:areacodes)  #=> []
+    #   self.load_csv(:zipcodes)  #=> []
+    #
+    # Returns an Array of values from the CSV data.
+    def self.load_csv(type)
+      file = File.open(File.join(File.dirname(__FILE__), '..', 'data',  "#{type}.csv"))
+      (RUBY_VERSION.to_f >= 1.9) ? CSV.read(file) : FasterCSV.parse(file)
+    end
 end
